@@ -1,0 +1,40 @@
+[
+  {
+    "file": "src/libraries/BipsLibrary.sol",
+    "formulas": [
+      {
+        "formula": "\\frac{amount \\cdot bips}{BPS_DENOMINATOR}",
+        "lineRange": {
+          "start": 16,
+          "end": 16
+        }
+      }
+    ]
+  },
+  {
+    "file": "src/libraries/PoolTicksCounter.sol",
+    "formulas": [
+      {
+        "formula": "\\frac{tickBefore}{tickSpacing} % 256.0",
+        "lineRange": {
+          "start": 36,
+          "end": 36
+        }
+      },
+      {
+        "formula": "\\frac{tickAfter}{tickSpacing} % 256.0",
+        "lineRange": {
+          "start": 39,
+          "end": 39
+        }
+      },
+      {
+        "formula": "initializedTicksLoaded + \\mathsf{countOneBits}(masked)",
+        "lineRange": {
+          "start": 80,
+          "end": 80
+        }
+      }
+    ]
+  }
+]
