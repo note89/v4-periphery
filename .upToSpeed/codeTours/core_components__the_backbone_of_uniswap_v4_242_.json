@@ -1,1 +1,148 @@
-{"title":"Core Components: The Backbone of Uniswap v4","id":"vkkRQxqS015Jwyy3tystFdKCDxXiX8JxcjLlRVvb6d4=","steps":[{"type":"textOnly","description":"Welcome to the tour of Uniswap v4's core components. In this tour, we'll explore the key contracts that form the backbone of the Uniswap v4 protocol: PositionManager, V4Router, PoolManager, and BaseActionsRouter. These components work together to provide advanced liquidity management and efficient token swaps. Let's dive in!","title":"","id":"2259"},{"type":"highlight","description":"The PositionManager is responsible for creating and managing liquidity positions. It implements the ERC721 standard, representing each position as a unique NFT. Let's look at its key functions:","file":"src/PositionManager.sol","highlight":[{"start":160,"end":176}],"title":"","id":"2260"},{"type":"highlight","description":"The PositionManager uses a flexible action system to handle various operations. The _handleAction function is the core of this system, processing different types of actions based on their numeric identifiers. Let's examine the structure of this function:","file":"src/PositionManager.sol","highlight":[{"start":183,"end":184}],"title":"","id":"2282"},{"type":"highlight","description":"Let's look at how the PositionManager handles liquidity-related actions. The INCREASE_LIQUIDITY and DECREASE_LIQUIDITY actions are used to modify the liquidity of existing positions:","file":"src/PositionManager.sol","highlight":[{"start":185,"end":204}],"title":"","id":"2283"},{"type":"highlight","description":"Now, let's examine the position-related actions. The MINT_POSITION action creates a new position, while the BURN_POSITION action removes an existing position:","file":"src/PositionManager.sol","highlight":[{"start":205,"end":224}],"title":"","id":"2284"},{"type":"highlight","description":"The PositionManager also handles various settlement and currency-related actions. Let's look at SETTLE_PAIR, TAKE_PAIR, SETTLE, and TAKE actions:","file":"src/PositionManager.sol","highlight":[{"start":229,"end":240}],"title":"","id":"2285"},{"type":"highlight","description":"Lastly, let's examine the additional currency-related actions: CLOSE_CURRENCY, CLEAR_OR_TAKE, and SWEEP:","file":"src/PositionManager.sol","highlight":[{"start":241,"end":253}],"title":"","id":"2286"},{"type":"highlight","description":"The V4Router is responsible for executing various swap and liquidity management actions. Let's examine its core functionality:","file":"src/V4Router.sol","highlight":[{"start":34,"end":80}],"title":"","id":"2262"},{"type":"highlight","description":"Here's how the V4Router executes a swap operation:","file":"src/V4Router.sol","highlight":[{"start":153,"end":175}],"title":"","id":"2263"},{"type":"highlight","description":"The PoolManager is a crucial component in Uniswap v4, serving as the central hub for pool operations. It handles pool creation, liquidity management, and swap execution. Let's examine how it's referenced in other contracts:\n\nThe PoolManager is set as an immutable state variable. This design choice offers several benefits:\n1. Gas Efficiency: Immutable variables are cheaper to read than storage variables.\n2. Security: Once set, the PoolManager reference cannot be changed, preventing potential vulnerabilities.\n3. Consistency: All contracts interacting with pools use the same PoolManager instance.\n\nThis architecture allows other components like the PositionManager and V4Router to interact with pools through a single, trusted interface. The PoolManager encapsulates the core logic for pool operations, promoting a modular and upgradeable system design.","file":"src/base/ImmutableState.sol","highlight":[{"start":1,"end":13}],"title":"","id":"2264"},{"type":"highlight","description":"The BaseActionsRouter serves as a foundation for executing multiple actions. Here's how it processes a series of actions:","file":"src/base/BaseActionsRouter.sol","highlight":[{"start":38,"end":47}],"title":"","id":"2265"},{"type":"textOnly","description":"We've explored the core components of Uniswap v4: PositionManager, V4Router, PoolManager, and BaseActionsRouter. Let's see how they interact in a typical transaction flow:\n\n1. A user interacts with the V4Router to initiate a swap or liquidity action.\n2. The V4Router processes the request and calls the appropriate methods on the PoolManager.\n3. The PoolManager executes the swap or liquidity change in the specified pool.\n4. For liquidity-related actions, the PositionManager is involved to mint, burn, or modify NFT positions.\n5. The BaseActionsRouter facilitates the execution of multiple actions in a single transaction.\n\nThis modular design allows for easy extensibility and customization, making Uniswap v4 a powerful and flexible platform for DeFi applications. Each component has a specific role, working together to provide an efficient decentralized exchange protocol.","title":"","id":"2266"}]}
+{
+    "title": "Core Components: The Backbone of Uniswap v4",
+    "id": "vkkRQxqS015Jwyy3tystFdKCDxXiX8JxcjLlRVvb6d4=",
+    "steps": [
+        {
+            "type": "textOnly",
+            "description": "Welcome to the tour of Uniswap v4's core components. In this tour, we'll explore the key contracts that form the backbone of the Uniswap v4 protocol: PositionManager, V4Router, PoolManager, and BaseActionsRouter. These components work together to provide advanced liquidity management and efficient token swaps. Let's dive in!",
+            "title": "",
+            "id": "2259"
+        },
+        {
+            "type": "highlight",
+            "description": "The PositionManager is responsible for creating and managing liquidity positions. It implements the ERC721 standard, representing each position as a unique NFT. Let's look at its key functions:",
+            "file": "src/PositionManager.sol",
+            "highlight": [
+                {
+                    "start": 160,
+                    "end": 176
+                }
+            ],
+            "title": "",
+            "id": "2260"
+        },
+        {
+            "type": "highlight",
+            "description": "The PositionManager uses a flexible action system to handle various operations. The _handleAction function is the core of this system, processing different types of actions based on their numeric identifiers. Let's examine the structure of this function:",
+            "file": "src/PositionManager.sol",
+            "highlight": [
+                {
+                    "start": 183,
+                    "end": 183
+                }
+            ],
+            "title": "",
+            "id": "2282"
+        },
+        {
+            "type": "highlight",
+            "description": "Let's look at how the PositionManager handles liquidity-related actions. The INCREASE_LIQUIDITY and DECREASE_LIQUIDITY actions are used to modify the liquidity of existing positions:",
+            "file": "src/PositionManager.sol",
+            "highlight": [
+                {
+                    "start": 185,
+                    "end": 206
+                }
+            ],
+            "title": "",
+            "id": "2283"
+        },
+        {
+            "type": "highlight",
+            "description": "Now, let's examine the position-related actions. The MINT_POSITION action creates a new position, while the BURN_POSITION action removes an existing position:",
+            "file": "src/PositionManager.sol",
+            "highlight": [
+                {
+                    "start": 207,
+                    "end": 229
+                }
+            ],
+            "title": "",
+            "id": "2284"
+        },
+        {
+            "type": "highlight",
+            "description": "The PositionManager also handles various settlement and currency-related actions. Let's look at SETTLE_PAIR, TAKE_PAIR, SETTLE, and TAKE actions:",
+            "file": "src/PositionManager.sol",
+            "highlight": [
+                {
+                    "start": 230,
+                    "end": 246
+                }
+            ],
+            "title": "",
+            "id": "2285"
+        },
+        {
+            "type": "highlight",
+            "description": "Lastly, let's examine the additional currency-related actions: CLOSE_CURRENCY, CLEAR_OR_TAKE, and SWEEP:",
+            "file": "src/PositionManager.sol",
+            "highlight": [
+                {
+                    "start": 247,
+                    "end": 259
+                }
+            ],
+            "title": "",
+            "id": "2286"
+        },
+        {
+            "type": "highlight",
+            "description": "The V4Router is responsible for executing various swap and liquidity management actions. Let's examine its core functionality:",
+            "file": "src/V4Router.sol",
+            "highlight": [
+                {
+                    "start": 34,
+                    "end": 87
+                }
+            ],
+            "title": "",
+            "id": "2262"
+        },
+        {
+            "type": "highlight",
+            "description": "Here's how the V4Router executes a swap operation:",
+            "file": "src/V4Router.sol",
+            "highlight": [
+                {
+                    "start": 160,
+                    "end": 182
+                }
+            ],
+            "title": "",
+            "id": "2263"
+        },
+        {
+            "type": "highlight",
+            "description": "The PoolManager is a crucial component in Uniswap v4, serving as the central hub for pool operations. It handles pool creation, liquidity management, and swap execution. Let's examine how it's referenced in other contracts:\n\nThe PoolManager is set as an immutable state variable. This design choice offers several benefits:\n1. Gas Efficiency: Immutable variables are cheaper to read than storage variables.\n2. Security: Once set, the PoolManager reference cannot be changed, preventing potential vulnerabilities.\n3. Consistency: All contracts interacting with pools use the same PoolManager instance.\n\nThis architecture allows other components like the PositionManager and V4Router to interact with pools through a single, trusted interface. The PoolManager encapsulates the core logic for pool operations, promoting a modular and upgradeable system design.",
+            "file": "src/base/ImmutableState.sol",
+            "highlight": [
+                {
+                    "start": 1,
+                    "end": 12
+                }
+            ],
+            "title": "",
+            "id": "2264"
+        },
+        {
+            "type": "highlight",
+            "description": "The BaseActionsRouter serves as a foundation for executing multiple actions. Here's how it processes a series of actions:",
+            "file": "src/base/BaseActionsRouter.sol",
+            "highlight": [
+                {
+                    "start": 38,
+                    "end": 47
+                }
+            ],
+            "title": "",
+            "id": "2265"
+        },
+        {
+            "type": "textOnly",
+            "description": "We've explored the core components of Uniswap v4: PositionManager, V4Router, PoolManager, and BaseActionsRouter. Let's see how they interact in a typical transaction flow:\n\n1. A user interacts with the V4Router to initiate a swap or liquidity action.\n2. The V4Router processes the request and calls the appropriate methods on the PoolManager.\n3. The PoolManager executes the swap or liquidity change in the specified pool.\n4. For liquidity-related actions, the PositionManager is involved to mint, burn, or modify NFT positions.\n5. The BaseActionsRouter facilitates the execution of multiple actions in a single transaction.\n\nThis modular design allows for easy extensibility and customization, making Uniswap v4 a powerful and flexible platform for DeFi applications. Each component has a specific role, working together to provide an efficient decentralized exchange protocol.",
+            "title": "",
+            "id": "2266"
+        }
+    ]
+}
