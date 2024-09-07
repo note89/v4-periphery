@@ -1,1 +1,98 @@
-{"title":"Uniswap v4: Architecture and Innovations Overview","id":"TI0ICAcc1LBXU+jmsAz7yQ4n0jDEm6aNBrvVk2C5ZKw=","steps":[{"type":"textOnly","description":"Welcome to the Uniswap v4 code tour! Uniswap v4 is an advanced decentralized exchange protocol that builds upon its predecessors, offering enhanced features for efficient token swaps and liquidity provision. This tour will provide a comprehensive overview of the project, focusing on its key components and innovations.","title":"","id":"2277"},{"type":"textOnly","description":"One of the core features of Uniswap v4 is concentrated liquidity. This concept allows liquidity providers to allocate their assets within specific price ranges, significantly improving capital efficiency compared to earlier versions of Uniswap. By concentrating liquidity where it's most needed, the protocol can offer better pricing and reduced slippage for traders.","title":"","id":"2278"},{"type":"textOnly","description":"Uniswap v4 introduces several key innovations that set it apart:\n\n1. Enhanced capital efficiency through concentrated liquidity\n2. Extensibility via hooks for custom logic\n3. Improved position management with NFT representation\n4. Advanced routing capabilities for optimized trades\n\nThese features collectively position Uniswap v4 as a highly flexible and efficient decentralized exchange protocol. Throughout this tour, we'll explore each of these innovations in detail, examining how they're implemented and the benefits they provide to users of the protocol.","title":"","id":"2279"},{"type":"revealFiles","files":["README.md"],"description":"The README provides an overview of Uniswap v4 Periphery. It extends the core Uniswap v4 automated market maker protocol with advanced functionality and customization options for liquidity pools. Key features include hook contracts, position managers, and integration libraries that enhance the core pool logic.","title":"","id":"2252"},{"type":"highlight","description":"The PositionManager contract is responsible for creating and managing liquidity positions. It implements the ERC721 standard, representing each position as a unique NFT. Key functions include minting new positions, modifying liquidity, and burning positions.","file":"src/PositionManager.sol","highlight":[{"start":1,"end":30}],"title":"","id":"2253"},{"type":"revealFiles","files":["src/V4Router.sol"],"description":"The V4Router contract is a crucial component of Uniswap v4, handling various swap and liquidity management actions. It implements the IV4Router interface and inherits from BaseActionsRouter and DeltaResolver. This structure allows for efficient handling of different types of actions within the Uniswap v4 protocol.","title":"","id":"2280"},{"type":"highlight","description":"The _handleAction function in V4Router is responsible for processing different types of swap actions. It uses a conditional structure to determine the type of action and calls the appropriate internal function. For example, it handles exact input swaps (both multi-hop and single-pool) and exact output swaps. This design allows for efficient routing and execution of various swap types within the Uniswap v4 ecosystem.","file":"src/V4Router.sol","highlight":[{"start":34,"end":40}],"title":"","id":"2281"},{"type":"highlight","description":"The Quoter contract is used for providing price quotes and simulating swaps without executing them on-chain. It offers functions for quoting exact input and output swaps, both for single pools and along multi-hop paths.","file":"src/lens/Quoter.sol","highlight":[{"start":1,"end":30}],"title":"","id":"2255"},{"type":"highlight","description":"The BaseHook contract serves as a foundation for implementing custom hooks in Uniswap v4. Hooks allow for the execution of custom logic at specific points during pool operations, enhancing the protocol's flexibility and customization options.","file":"src/base/hooks/BaseHook.sol","highlight":[{"start":1,"end":30}],"title":"","id":"2256"},{"type":"textOnly","description":"Concentrated liquidity is a key innovation in Uniswap v4 that significantly enhances capital efficiency. Unlike previous versions where liquidity was distributed uniformly across all price ranges, v4 allows liquidity providers (LPs) to allocate their assets within specific price ranges.\n\nFor example, if an ETH/USDC pair is trading around $2000, an LP might concentrate their liquidity between $1900 and $2100. This concentration means that their capital is fully utilized within this range, potentially earning more fees compared to having it spread across all possible prices.\n\nThis feature benefits both LPs and traders:\n- LPs can earn more fees with less capital by focusing on active price ranges.\n- Traders enjoy lower slippage due to deeper liquidity around current market prices.\n\nBy allowing precise liquidity allocation, Uniswap v4 achieves superior capital efficiency, making it more competitive and attractive in the DEX landscape.","title":"","id":"2257"},{"type":"textOnly","description":"Uniswap v4 introduces several key innovations that significantly enhance its capabilities:\n\n1) Concentrated Liquidity: Unlike v3's static liquidity ranges, v4 allows for dynamic \n   adjustments, further improving capital efficiency and potentially higher yields for LPs.\n\n2) Hooks: A major advancement over v3, enabling customizable logic at various swap stages. \n   This extensibility allows for unique features like just-in-time liquidity or \n   dynamic fees.\n\n3) NFT Position Management: Building on v3's concept, v4 refines NFT representation of \n   liquidity positions, offering more granular control and potential for secondary markets.\n\n4) Advanced Routing: V4 introduces more sophisticated routing algorithms compared to \n   previous versions, optimizing trade execution across multiple pools.\n\nThese innovations collectively make Uniswap v4 more flexible, efficient, and \ncustomizable than its predecessors, potentially leading to better prices for traders \nand enhanced opportunities for liquidity providers.","title":"","id":"2258"}]}
+{
+    "title": "Uniswap v4: Architecture and Innovations Overview",
+    "id": "TI0ICAcc1LBXU+jmsAz7yQ4n0jDEm6aNBrvVk2C5ZKw=",
+    "steps": [
+        {
+            "type": "textOnly",
+            "description": "Welcome to the Uniswap v4 code tour! Uniswap v4 is an advanced decentralized exchange protocol that builds upon its predecessors, offering enhanced features for efficient token swaps and liquidity provision. This tour will provide a comprehensive overview of the project, focusing on its key components and innovations.",
+            "title": "",
+            "id": "2277"
+        },
+        {
+            "type": "textOnly",
+            "description": "One of the core features of Uniswap v4 is concentrated liquidity. This concept allows liquidity providers to allocate their assets within specific price ranges, significantly improving capital efficiency compared to earlier versions of Uniswap. By concentrating liquidity where it's most needed, the protocol can offer better pricing and reduced slippage for traders.",
+            "title": "",
+            "id": "2278"
+        },
+        {
+            "type": "textOnly",
+            "description": "Uniswap v4 introduces several key innovations that set it apart:\n\n1. Enhanced capital efficiency through concentrated liquidity\n2. Extensibility via hooks for custom logic\n3. Improved position management with NFT representation\n4. Advanced routing capabilities for optimized trades\n\nThese features collectively position Uniswap v4 as a highly flexible and efficient decentralized exchange protocol. Throughout this tour, we'll explore each of these innovations in detail, examining how they're implemented and the benefits they provide to users of the protocol.",
+            "title": "",
+            "id": "2279"
+        },
+        {
+            "type": "revealFiles",
+            "files": [
+                "README.md"
+            ],
+            "description": "The README provides an overview of Uniswap v4 Periphery. It extends the core Uniswap v4 automated market maker protocol with advanced functionality and customization options for liquidity pools. Key features include hook contracts, position managers, and integration libraries that enhance the core pool logic.",
+            "title": "",
+            "id": "2252"
+        },
+        {
+            "type": "highlight",
+            "description": "The PositionManager contract is responsible for creating and managing liquidity positions. It implements the ERC721 standard, representing each position as a unique NFT. Key functions include minting new positions, modifying liquidity, and burning positions.",
+            "file": "src/PositionManager.sol",
+            "highlight": [
+                {
+                    "start": 1,
+                    "end": 28
+                }
+            ],
+            "title": "",
+            "id": "2253"
+        },
+        {
+            "type": "revealFiles",
+            "files": [
+                "src/V4Router.sol"
+            ],
+            "description": "The V4Router contract is a crucial component of Uniswap v4, handling various swap and liquidity management actions. It implements the IV4Router interface and inherits from BaseActionsRouter and DeltaResolver. This structure allows for efficient handling of different types of actions within the Uniswap v4 protocol.",
+            "title": "",
+            "id": "2280"
+        },
+        {
+            "type": "highlight",
+            "description": "The _handleAction function in V4Router is responsible for processing different types of swap actions. It uses a conditional structure to determine the type of action and calls the appropriate internal function. For example, it handles exact input swaps (both multi-hop and single-pool) and exact output swaps. This design allows for efficient routing and execution of various swap types within the Uniswap v4 ecosystem.",
+            "file": "src/V4Router.sol",
+            "highlight": [
+                {
+                    "start": 34,
+                    "end": 87
+                }
+            ],
+            "title": "",
+            "id": "2281"
+        },
+        {
+            "type": "revealFiles",
+            "description": "The Quoter contract is used for providing price quotes and simulating swaps without executing them on-chain. It offers functions for quoting exact input and output swaps, both for single pools and along multi-hop paths.",
+            "files": [
+                "src/lens/Quoter.sol"
+            ],
+            "title": "",
+            "id": "2255"
+        },
+        {
+            "type": "revealFiles",
+            "description": "The BaseHook contract serves as a foundation for implementing custom hooks in Uniswap v4. Hooks allow for the execution of custom logic at specific points during pool operations, enhancing the protocol's flexibility and customization options.",
+            "files": [
+                "src/base/hooks/BaseHook.sol"
+            ],
+            "title": "",
+            "id": "2256"
+        },
+        {
+            "type": "textOnly",
+            "description": "Concentrated liquidity is a key innovation in Uniswap v4 that significantly enhances capital efficiency. Unlike previous versions where liquidity was distributed uniformly across all price ranges, v4 allows liquidity providers (LPs) to allocate their assets within specific price ranges.\n\nFor example, if an ETH/USDC pair is trading around $2000, an LP might concentrate their liquidity between $1900 and $2100. This concentration means that their capital is fully utilized within this range, potentially earning more fees compared to having it spread across all possible prices.\n\nThis feature benefits both LPs and traders:\n- LPs can earn more fees with less capital by focusing on active price ranges.\n- Traders enjoy lower slippage due to deeper liquidity around current market prices.\n\nBy allowing precise liquidity allocation, Uniswap v4 achieves superior capital efficiency, making it more competitive and attractive in the DEX landscape.",
+            "title": "",
+            "id": "2257"
+        },
+        {
+            "type": "textOnly",
+            "description": "Uniswap v4 introduces several key innovations that significantly enhance its capabilities:\n\n1) Concentrated Liquidity: Unlike v3's static liquidity ranges, v4 allows for dynamic \n   adjustments, further improving capital efficiency and potentially higher yields for LPs.\n\n2) Hooks: A major advancement over v3, enabling customizable logic at various swap stages. \n   This extensibility allows for unique features like just-in-time liquidity or \n   dynamic fees.\n\n3) NFT Position Management: Building on v3's concept, v4 refines NFT representation of \n   liquidity positions, offering more granular control and potential for secondary markets.\n\n4) Advanced Routing: V4 introduces more sophisticated routing algorithms compared to \n   previous versions, optimizing trade execution across multiple pools.\n\nThese innovations collectively make Uniswap v4 more flexible, efficient, and \ncustomizable than its predecessors, potentially leading to better prices for traders \nand enhanced opportunities for liquidity providers.",
+            "title": "",
+            "id": "2258"
+        }
+    ]
+}
