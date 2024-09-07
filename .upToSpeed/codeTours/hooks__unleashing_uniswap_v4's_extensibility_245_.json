@@ -1,1 +1,151 @@
-{"title":"Hooks: Unleashing Uniswap v4's Extensibility","id":"WUQXIi5ygUycczv9bOLk4Eu6UQVVBREkBSD0cIoFXts=","steps":[{"type":"textOnly","description":"Welcome to the Uniswap v4 Hooks and Extensibility tour! In this tour, we'll explore how hooks enable customization and extensibility in Uniswap v4. Hooks are a powerful feature that allow developers to inject custom logic at various points in the liquidity management and swap processes. This extensibility is a key innovation in v4, enabling a wide range of new use cases and optimizations.","title":"","id":"2267"},{"type":"revealFiles","files":["src/base/hooks/BaseHook.sol"],"description":"Let's examine the BaseHook contract, the cornerstone of Uniswap v4's extensibility. This abstract contract defines the interface and structure for all custom hooks, enabling developers to inject tailored logic into various pool operations.\n\nKey aspects to note:\n1. The contract inherits from IHooks, ensuring a standardized interface.\n2. It includes abstract hook functions (e.g., beforeSwap, afterAddLiquidity) that developers override to implement custom logic.\n3. The getHookPermissions() function allows hooks to declare their capabilities.\n4. Modifiers like 'selfOnly' and 'onlyValidPools' enhance security and control.\n\nAs we explore BaseHook, consider how its design facilitates the creation of diverse, customized pool behaviors, a core feature of Uniswap v4's extensible architecture.","title":"","id":"2268"},{"type":"highlight","description":"Let's start by examining the initialization hooks. These hooks are called when a new pool is created:","file":"src/base/hooks/BaseHook.sol","highlight":[{"start":54,"end":64}],"title":"","id":"2287"},{"type":"highlight","description":"Next, let's look at the liquidity management hooks. These hooks allow custom logic to be executed before and after liquidity is added or removed:","file":"src/base/hooks/BaseHook.sol","highlight":[{"start":66,"end":101}],"title":"","id":"2288"},{"type":"highlight","description":"Now, let's examine the swap hooks. These hooks enable custom logic to be executed before and after swaps:","file":"src/base/hooks/BaseHook.sol","highlight":[{"start":103,"end":117}],"title":"","id":"2289"},{"type":"highlight","description":"Finally, let's look at the donation hooks. These hooks allow custom logic to be executed before and after tokens are donated to a pool:","file":"src/base/hooks/BaseHook.sol","highlight":[{"start":119,"end":133}],"title":"","id":"2290"},{"type":"textOnly","description":"These hook functions provide extensive customization points in the Uniswap v4 architecture. By implementing these hooks, developers can create custom behaviors for pool initialization, liquidity management, swaps, and donations. This extensibility allows for the creation of highly specialized and efficient liquidity pools tailored to specific use cases.","title":"","id":"2291"},{"type":"revealFiles","files":["test/shared/HookSavesDelta.sol"],"description":"Now, let's look at an example of a hook implementation used for testing. The HookSavesDelta contract demonstrates how hooks can be used to capture and store balance changes during liquidity operations.","title":"","id":"2270"},{"type":"highlight","description":"Here's how the HookSavesDelta contract implements the afterAddLiquidity and afterRemoveLiquidity hooks:","file":"test/shared/HookSavesDelta.sol","highlight":[{"start":14,"end":34}],"title":"","id":"2271"},{"type":"revealFiles","files":["test/shared/HookModifyLiquidities.sol"],"description":"Now, let's examine the HookModifyLiquidities contract, a powerful example of Uniswap v4's extensibility. This contract demonstrates a key innovation: the ability to modify liquidity without locking the pool. This feature enables developers to create sophisticated, custom liquidity management strategies.\n\nThe contract allows for dynamic liquidity adjustments during swap operations, showcasing how hooks can interact with core Uniswap v4 functionality. By modifying liquidity \"on-the-fly\", it opens up possibilities for more efficient capital utilization and tailored market-making strategies.\n\nAs you review the code, pay attention to how it implements the beforeSwap, beforeAddLiquidity, and beforeRemoveLiquidity hooks. These implementations show how custom logic can be injected at critical points in the swap and liquidity provision processes.","title":"","id":"2272"},{"type":"highlight","description":"The beforeSwap function in HookModifyLiquidities demonstrates how a hook can modify liquidity just before a swap occurs:","file":"test/shared/HookModifyLiquidities.sol","highlight":[{"start":28,"end":40}],"title":"","id":"2273"},{"type":"revealFiles","files":["src/V4Router.sol"],"description":"To understand how hooks are integrated into the core functionality, let's look at the V4Router contract. This contract is responsible for executing swaps and interacting with hooks.","title":"","id":"2274"},{"type":"highlight","description":"The _swap function in V4Router demonstrates a key aspect of Uniswap v4's extensibility: the injection of custom logic via hookData during swaps. Let's examine how this works:\n\n1. The hookData parameter allows external contracts to pass custom data to hooks.\n2. This data is forwarded to the poolManager.swap() function, which can then interact with the appropriate hooks.\n3. Hooks can use this data to implement custom behaviors before, during, or after the swap.\n4. This mechanism enables developers to create tailored swap logic, fee structures, or even complex multi-step operations.\n\nBy allowing this level of customization, Uniswap v4 provides a flexible framework for creating innovative DEX functionalities without modifying the core protocol.","file":"src/V4Router.sol","highlight":[{"start":153,"end":175}],"title":"","id":"2275"},{"type":"textOnly","description":"We've explored how hooks enable extensibility in Uniswap v4. By allowing developers to inject custom logic at various points in the liquidity management and swap processes, hooks open up a world of possibilities for creating tailored functionalities. This extensibility is a key feature of Uniswap v4, enabling the creation of more efficient, flexible, and innovative decentralized exchange mechanisms.","title":"","id":"2276"}]}
+{
+    "title": "Hooks: Unleashing Uniswap v4's Extensibility",
+    "id": "WUQXIi5ygUycczv9bOLk4Eu6UQVVBREkBSD0cIoFXts=",
+    "steps": [
+        {
+            "type": "textOnly",
+            "description": "Welcome to the Uniswap v4 Hooks and Extensibility tour! In this tour, we'll explore how hooks enable customization and extensibility in Uniswap v4. Hooks are a powerful feature that allow developers to inject custom logic at various points in the liquidity management and swap processes. This extensibility is a key innovation in v4, enabling a wide range of new use cases and optimizations.",
+            "title": "",
+            "id": "2267"
+        },
+        {
+            "type": "revealFiles",
+            "files": [
+                "src/base/hooks/BaseHook.sol"
+            ],
+            "description": "Let's examine the BaseHook contract, the cornerstone of Uniswap v4's extensibility. This abstract contract defines the interface and structure for all custom hooks, enabling developers to inject tailored logic into various pool operations.\n\nKey aspects to note:\n1. The contract inherits from IHooks, ensuring a standardized interface.\n2. It includes abstract hook functions (e.g., beforeSwap, afterAddLiquidity) that developers override to implement custom logic.\n3. The getHookPermissions() function allows hooks to declare their capabilities.\n4. Modifiers like 'selfOnly' and 'onlyValidPools' enhance security and control.\n\nAs we explore BaseHook, consider how its design facilitates the creation of diverse, customized pool behaviors, a core feature of Uniswap v4's extensible architecture.",
+            "title": "",
+            "id": "2268"
+        },
+        {
+            "type": "highlight",
+            "description": "Let's start by examining the initialization hooks. These hooks are called when a new pool is created:",
+            "file": "src/base/hooks/BaseHook.sol",
+            "highlight": [
+                {
+                    "start": 53,
+                    "end": 63
+                }
+            ],
+            "title": "",
+            "id": "2287"
+        },
+        {
+            "type": "highlight",
+            "description": "Next, let's look at the liquidity management hooks. These hooks allow custom logic to be executed before and after liquidity is added or removed:",
+            "file": "src/base/hooks/BaseHook.sol",
+            "highlight": [
+                {
+                    "start": 65,
+                    "end": 100
+                }
+            ],
+            "title": "",
+            "id": "2288"
+        },
+        {
+            "type": "highlight",
+            "description": "Now, let's examine the swap hooks. These hooks enable custom logic to be executed before and after swaps:",
+            "file": "src/base/hooks/BaseHook.sol",
+            "highlight": [
+                {
+                    "start": 102,
+                    "end": 116
+                }
+            ],
+            "title": "",
+            "id": "2289"
+        },
+        {
+            "type": "highlight",
+            "description": "Finally, let's look at the donation hooks. These hooks allow custom logic to be executed before and after tokens are donated to a pool:",
+            "file": "src/base/hooks/BaseHook.sol",
+            "highlight": [
+                {
+                    "start": 118,
+                    "end": 132
+                }
+            ],
+            "title": "",
+            "id": "2290"
+        },
+        {
+            "type": "textOnly",
+            "description": "These hook functions provide extensive customization points in the Uniswap v4 architecture. By implementing these hooks, developers can create custom behaviors for pool initialization, liquidity management, swaps, and donations. This extensibility allows for the creation of highly specialized and efficient liquidity pools tailored to specific use cases.",
+            "title": "",
+            "id": "2291"
+        },
+        {
+            "type": "revealFiles",
+            "files": [
+                "test/shared/HookSavesDelta.sol"
+            ],
+            "description": "Now, let's look at an example of a hook implementation used for testing. The HookSavesDelta contract demonstrates how hooks can be used to capture and store balance changes during liquidity operations.",
+            "title": "",
+            "id": "2270"
+        },
+        {
+            "type": "highlight",
+            "description": "Here's how the HookSavesDelta contract implements the afterAddLiquidity and afterRemoveLiquidity hooks:",
+            "file": "test/shared/HookSavesDelta.sol",
+            "highlight": [
+                {
+                    "start": 14,
+                    "end": 34
+                }
+            ],
+            "title": "",
+            "id": "2271"
+        },
+        {
+            "type": "revealFiles",
+            "files": [
+                "test/shared/HookModifyLiquidities.sol"
+            ],
+            "description": "Now, let's examine the HookModifyLiquidities contract, a powerful example of Uniswap v4's extensibility. This contract demonstrates a key innovation: the ability to modify liquidity without locking the pool. This feature enables developers to create sophisticated, custom liquidity management strategies.\n\nThe contract allows for dynamic liquidity adjustments during swap operations, showcasing how hooks can interact with core Uniswap v4 functionality. By modifying liquidity \"on-the-fly\", it opens up possibilities for more efficient capital utilization and tailored market-making strategies.\n\nAs you review the code, pay attention to how it implements the beforeSwap, beforeAddLiquidity, and beforeRemoveLiquidity hooks. These implementations show how custom logic can be injected at critical points in the swap and liquidity provision processes.",
+            "title": "",
+            "id": "2272"
+        },
+        {
+            "type": "highlight",
+            "description": "The beforeSwap function in HookModifyLiquidities demonstrates how a hook can modify liquidity just before a swap occurs:",
+            "file": "test/shared/HookModifyLiquidities.sol",
+            "highlight": [
+                {
+                    "start": 28,
+                    "end": 40
+                }
+            ],
+            "title": "",
+            "id": "2273"
+        },
+        {
+            "type": "revealFiles",
+            "files": [
+                "src/V4Router.sol"
+            ],
+            "description": "To understand how hooks are integrated into the core functionality, let's look at the V4Router contract. This contract is responsible for executing swaps and interacting with hooks.",
+            "title": "",
+            "id": "2274"
+        },
+        {
+            "type": "highlight",
+            "description": "The _swap function in V4Router demonstrates a key aspect of Uniswap v4's extensibility: the injection of custom logic via hookData during swaps. Let's examine how this works:\n\n1. The hookData parameter allows external contracts to pass custom data to hooks.\n2. This data is forwarded to the poolManager.swap() function, which can then interact with the appropriate hooks.\n3. Hooks can use this data to implement custom behaviors before, during, or after the swap.\n4. This mechanism enables developers to create tailored swap logic, fee structures, or even complex multi-step operations.\n\nBy allowing this level of customization, Uniswap v4 provides a flexible framework for creating innovative DEX functionalities without modifying the core protocol.",
+            "file": "src/V4Router.sol",
+            "highlight": [
+                {
+                    "start": 160,
+                    "end": 182
+                }
+            ],
+            "title": "",
+            "id": "2275"
+        },
+        {
+            "type": "textOnly",
+            "description": "We've explored how hooks enable extensibility in Uniswap v4. By allowing developers to inject custom logic at various points in the liquidity management and swap processes, hooks open up a world of possibilities for creating tailored functionalities. This extensibility is a key feature of Uniswap v4, enabling the creation of more efficient, flexible, and innovative decentralized exchange mechanisms.",
+            "title": "",
+            "id": "2276"
+        }
+    ]
+}
