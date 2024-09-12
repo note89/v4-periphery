@@ -1,0 +1,174 @@
+{
+  "title": "Uniswap v4 Architecture: An Auditor's Deep Dive",
+  "id": "BelkZMS7Egxm5Y+W/3I/47WKKxkg3pGgMNLOBVpqEUk=",
+  "steps": [
+    {
+      "type": "textOnly",
+      "description": "Welcome to the `Uniswap v4` Architecture Tour, designed for **Solidity experts** preparing for an audit. This tour will provide an in-depth look at:\n\n1. Core components of `Uniswap v4`\n2. Contract interactions and their security implications\n3. New features and their potential vulnerabilities\n4. Architectural decisions and their impact on the system's security\n\nAs we progress through the tour, we'll focus on the technical intricacies and security considerations that are most relevant to auditors. Let's begin by examining the overall architecture and key components of `Uniswap v4`.",
+      "title": "",
+      "id": "253"
+    },
+    {
+      "type": "textOnly",
+      "description": "Let's examine the core components of Uniswap v4 and their interactions:\n\n1. **PoolManager**: The central contract managing all pools and their states.\n2. **V4Router**: The primary entry point for user interactions, handling swaps and liquidity operations.\n3. **PositionManager**: Manages liquidity positions as ERC721 tokens.\n4. **Hooks**: Custom contracts that can inject logic at various points in the swap and liquidity management processes.\n\nHere's a high-level overview of their interactions:\n\n- `V4Router` interacts with `PoolManager` to execute swaps and manage liquidity.\n- `PositionManager` also interacts with `PoolManager` to create and modify liquidity positions.\n- `Hooks` are called by `PoolManager` at specific points during operations, allowing for custom logic.\n- Users primarily interact with `V4Router` and `PositionManager`.\n\nAs an auditor, pay special attention to:\n- The trust relationships between these components\n- Potential attack vectors in cross-contract interactions\n- The impact of hooks on the overall system security\n\nIn the following steps, we'll dive deeper into each of these components and their critical functions.",
+      "title": "",
+      "id": "254"
+    },
+    {
+      "type": "highlight",
+      "description": "The `V4Router` contract is a crucial component of Uniswap v4, serving as the primary entry point for user interactions. Let's examine its structure and key features:\n\n1. It inherits from `IV4Router`, `BaseActionsRouter`, and `DeltaResolver`.\n2. It uses several libraries for efficient operations.\n3. The contract handles various swap types and liquidity management actions.\n4. It interacts with the `PoolManager` to execute core operations.\n\nIn the following steps, we'll break down the contract's main functions and their security implications.",
+      "file": "src/V4Router.sol",
+      "highlight": [{ "start": 1, "end": 28 }],
+      "title": "",
+      "id": "259"
+    },
+    {
+      "type": "highlight",
+      "description": "The `V4Router` constructor takes an `IPoolManager` as a parameter and passes it to the `BaseActionsRouter` constructor:\n\n```solidity\nconstructor(IPoolManager _poolManager) BaseActionsRouter(_poolManager) {}\n```\n\nThis setup establishes the connection between the `V4Router` and the `PoolManager`, which is useful for executing swap and liquidity operations. As an auditor, verify that the `_poolManager` address is properly validated and that there are no potential issues with contract upgrades or replacements.",
+      "file": "src/V4Router.sol",
+      "highlight": [{ "start": 30, "end": 30 }],
+      "title": "",
+      "id": "260"
+    },
+    {
+      "type": "highlight",
+      "description": "The `_handleAction` function is the core of the `V4Router`, processing various user actions:\n\n1. It takes an `action` parameter and `params` as input.\n2. Actions are divided into swap actions and payment actions for gas efficiency.\n3. The function uses a series of if-else statements to route the action to the appropriate internal function.\n4. It handles various swap types (exact input, exact output, single and multi-hop) and settlement actions.\n\nAs an auditor, pay attention to:\n- Input validation for the `action` parameter\n- Proper decoding of `params` for each action type\n- Potential for reentrancy in the function calls",
+      "file": "src/V4Router.sol",
+      "highlight": [{ "start": 32, "end": 85 }],
+      "title": "",
+      "id": "261"
+    },
+    {
+      "type": "highlight",
+      "description": "The `_swapExactInputSingle` function handles single-hop exact input swaps:\n\n1. It first determines the `amountIn`, using `ActionConstants.OPEN_DELTA` if specified.\n2. It calls the internal `_swap` function with the necessary parameters.\n3. It checks if the output amount meets the minimum required, reverting if not.\n\nKey security considerations:\n- Proper handling of the `OPEN_DELTA` case\n- Slippage protection through the `amountOutMinimum` check\n- Potential for manipulation in the `_swap` function call",
+      "file": "src/V4Router.sol",
+      "highlight": [{ "start": 87, "end": 97 }],
+      "title": "",
+      "id": "262"
+    },
+    {
+      "type": "highlight",
+      "description": "The `_swapExactInput` function handles multi-hop exact input swaps:\n\n1. It uses an unchecked block for gas optimization.\n2. It iterates through the provided path, executing swaps for each hop.\n3. It updates `amountIn` and `currencyIn` after each swap.\n4. Finally, it checks if the output amount meets the minimum required.\n\nAuditing considerations:\n- Potential overflow/underflow issues in the unchecked block\n- Proper handling of intermediate swap results\n- Gas limit concerns for long swap paths",
+      "file": "src/V4Router.sol",
+      "highlight": [{ "start": 99, "end": 121 }],
+      "title": "",
+      "id": "263"
+    },
+    {
+      "type": "highlight",
+      "description": "The `_swap` function is the core of all swap operations:\n\n1. It calls `poolManager.swap` with the provided parameters.\n2. It handles the setting of `sqrtPriceLimitX96` for price impact control.\n3. It processes the returned `BalanceDelta` to determine the swap result.\n\nKey security points:\n- Proper handling of the `zeroForOne` parameter\n- Correct interpretation of the `BalanceDelta` result\n- Potential for manipulation through the `hookData` parameter\n\nAs an auditor, carefully review this function for any potential vulnerabilities in its interaction with the `PoolManager` and its handling of swap results.",
+      "file": "src/V4Router.sol",
+      "highlight": [{ "start": 173, "end": 195 }],
+      "title": "",
+      "id": "264"
+    },
+    {
+      "type": "highlight",
+      "description": "Now, let's examine the `PositionManager` contract. This contract handles liquidity positions, represented as ERC721 tokens. Note the multiple inheritance, including `ReentrancyLock` for security. As an **auditor**, pay close attention to how this contract interacts with other components and handles user inputs.",
+      "file": "src/PositionManager.sol",
+      "highlight": [{ "start": 1, "end": 13 }],
+      "title": "",
+      "id": "247"
+    },
+    {
+      "type": "highlight",
+      "description": "Let's examine the `_mint` function in the `PositionManager` contract, which is crucial for creating new liquidity positions. This function handles input validation, interacts with the `PoolManager`, and manages token transfers. We'll analyze it in detail, considering potential edge cases and security implications.\n\nFirst, let's look at the function signature and its parameters:",
+      "file": "src/PositionManager.sol",
+      "highlight": [{ "start": 270, "end": 303 }],
+      "title": "",
+      "id": "255"
+    },
+    {
+      "type": "highlight",
+      "description": "After input validation, the `_mint` function proceeds with token transfers and `PoolManager` interactions:\n\n1. It creates a `ModifyPositionParams` struct with the validated inputs.\n2. It calls `poolManager.modifyPosition` to update the liquidity position.\n3. It handles the returned `BalanceDelta`, ensuring the correct amounts are transferred.\n\nAs an auditor, pay attention to:\n- How the function handles the returned `BalanceDelta`\n- The use of `SafeCast` for type conversions\n- The token transfer logic and potential **reentrancy risks**",
+      "file": "src/PositionManager.sol",
+      "highlight": [{ "start": 376, "end": 397 }],
+      "title": "",
+      "id": "257"
+    },
+    {
+      "type": "highlight",
+      "description": "The `BaseHook` contract is a fundamental component of Uniswap v4's new hook system. This abstract contract serves as the foundation for all custom hooks, allowing developers to inject custom logic at specific points in the swap lifecycle. We'll examine its structure and key features, which span lines 1-150 of the contract.",
+      "file": "src/base/hooks/BaseHook.sol",
+      "highlight": [{ "start": 1, "end": 150 }],
+      "title": "",
+      "id": "265"
+    },
+    {
+      "type": "highlight",
+      "description": "The `BaseHook` contract inherits from `IHooks` and `SafeCallback`. It imports several key components from Uniswap v4 core, including `Hooks`, `IPoolManager`, and various types like `BalanceDelta` and `PoolKey`. These imports provide the necessary interfaces and types for interacting with the Uniswap v4 ecosystem.",
+      "file": "src/base/hooks/BaseHook.sol",
+      "highlight": [{ "start": 4, "end": 14 }],
+      "title": "",
+      "id": "266"
+    },
+    {
+      "type": "highlight",
+      "description": "The contract defines four custom errors:\n1. `NotSelf`: Thrown when a function restricted to the contract itself is called externally.\n2. `InvalidPool`: Used when a function is called by an unauthorized pool.\n3. `LockFailure`: Indicates a failure in the locking mechanism.\n4. `HookNotImplemented`: Thrown when a hook function is called but not implemented.\nThese custom errors provide clear and gas-efficient error reporting.",
+      "file": "src/base/hooks/BaseHook.sol",
+      "highlight": [{ "start": 15, "end": 18 }],
+      "title": "",
+      "id": "267"
+    },
+    {
+      "type": "highlight",
+      "description": "The constructor takes an `IPoolManager` as a parameter and passes it to the `SafeCallback` constructor. It then calls `validateHookAddress(this)`, which is crucial for ensuring that the deployed hook address matches the expected permissions. This validation helps prevent potential attacks through incorrect hook deployments.",
+      "file": "src/base/hooks/BaseHook.sol",
+      "highlight": [{ "start": 20, "end": 22 }],
+      "title": "",
+      "id": "268"
+    },
+    {
+      "type": "highlight",
+      "description": "The contract includes two important modifiers:\n1. `selfOnly`: Ensures that only the contract itself can call a function, preventing unauthorized external calls.\n2. `onlyValidPools`: Restricts function calls to pools that have their hooks set to this contract, preventing potential exploits from unauthorized pools.",
+      "file": "src/base/hooks/BaseHook.sol",
+      "highlight": [{ "start": 24, "end": 34 }],
+      "title": "",
+      "id": "269"
+    },
+    {
+      "type": "highlight",
+      "description": "The `getHookPermissions` function is a virtual function that returns a struct of permissions, indicating which hook functions are implemented. The `validateHookAddress` function uses these permissions to validate that the deployed hook address correctly represents the expected permissions. This validation is crucial for maintaining the integrity of the hook system.",
+      "file": "src/base/hooks/BaseHook.sol",
+      "highlight": [{ "start": 36, "end": 46 }],
+      "title": "",
+      "id": "270"
+    },
+    {
+      "type": "highlight",
+      "description": "The `_unlockCallback` function is an internal virtual function that handles callbacks from the Uniswap v4 core. It uses a low-level `call` to execute the callback data and handles both successful and failed calls. The use of inline assembly for error propagation should be carefully audited to ensure it doesn't introduce vulnerabilities.",
+      "file": "src/base/hooks/BaseHook.sol",
+      "highlight": [{ "start": 48, "end": 56 }],
+      "title": "",
+      "id": "271"
+    },
+    {
+      "type": "highlight",
+      "description": "The contract includes several hook functions (`beforeInitialize`, `afterInitialize`, `beforeAddLiquidity`, etc.) that correspond to different stages of pool operations. By default, all these functions revert with `HookNotImplemented`. This design ensures that only explicitly implemented hook functions are executed, preventing unintended behavior in custom hooks.",
+      "file": "src/base/hooks/BaseHook.sol",
+      "highlight": [{ "start": 58, "end": 149 }],
+      "title": "",
+      "id": "272"
+    },
+    {
+      "type": "highlight",
+      "description": "Let's examine the `_swap` function in the `V4Router` contract, which is crucial for understanding potential vulnerabilities in the swap process. This function is the core of swap operations in Uniswap v4.\n\nKey points to analyze:\n1. Line 4: Note the use of `IPoolManager`. As an auditor, verify that all interactions with the PoolManager are secure and cannot be manipulated.\n2. Lines 5-7: Pay attention to the use of custom types like `BalanceDelta` and `PoolKey`. Ensure these are implemented correctly and can't lead to unexpected behavior.\n3. Lines 8-10: The inclusion of libraries like `TickMath` and `SafeCast` is crucial for secure operations. Verify their correct usage throughout the function.\n\nWhen auditing the `_swap` function itself:\n- Check for proper input validation and edge case handling\n- Analyze the slippage protection mechanism\n- Verify that the function correctly handles different token decimals\n- Look for potential **reentrancy vulnerabilities**, especially in interactions with external contracts\n- Ensure that the function reverts appropriately on errors and doesn't leave the contract in an inconsistent state\n\nRemember, seemingly small oversights in swap functions can lead to significant vulnerabilities in **DeFi protocols**.",
+      "file": "src/V4Router.sol",
+      "highlight": [{ "start": 173, "end": 195 }],
+      "title": "",
+      "id": "250"
+    },
+    {
+      "type": "textOnly",
+      "description": "While we won't dive into specific test files, it's crucial to understand **Uniswap's** testing approach. The `test` directory contains comprehensive test suites. When auditing, pay attention to **edge cases**, **fuzz testing**, and **invariant checks**. Consider writing additional tests for scenarios that might not be covered.",
+      "title": "",
+      "id": "251"
+    },
+    {
+      "type": "textOnly",
+      "description": "As we conclude this tour of Uniswap v4's architecture, let's summarize key areas to focus on during your audit. Use this checklist as a starting point for your review:\n\n1. **Contract Interactions and Reentrancy**:\n   - Examine all external calls, especially in `PositionManager` and `V4Router`.\n   - Verify that the '**checks-effects-interactions**' pattern is consistently applied.\n\n2. **Hook System Security**:\n   - Analyze how hooks can potentially manipulate pool behavior or state.\n   - Check for proper access controls and validation of hook addresses.\n\n3. **Liquidity Management**:\n   - Review edge cases in the `_mint` and `_burn` functions of `PositionManager`.\n   - Verify correct handling of tick ranges and position boundaries.\n\n4. **Swap Execution**:\n   - Scrutinize the `_swap` function in `V4Router` for potential price manipulation.\n   - Verify slippage protection mechanisms and their effectiveness.\n\n5. **Pool Initialization and Management**:\n   - Check for potential front-running or sandwich attacks during pool creation.\n   - Verify proper access controls for pool parameter updates.\n\n6. **Gas Optimization and DoS Protection**:\n   - Review loop implementations, especially in multi-hop swaps.\n   - Check for potential gas griefing attacks in hook executions.\n\nRemember, this list is not exhaustive. Always consider how different components might interact in unexpected ways. Good luck with your audit!",
+      "title": "",
+      "id": "252"
+    }
+  ]
+}
